@@ -24,16 +24,17 @@ const (
 )
 
 type Route struct {
-	Method  string
-	Url     string
-	Tags    []string
-	Schema  *RouteSchema
+	Method          string
+	Url             string
+	Tags            []string
+	Schema          *RouteSchema
 	HandlerRegister func(path string)
 }
 
 type RouteSchema struct {
 	Summary     string
 	Description string
+	Security    any
 	Querystring any
 	Params      any
 	Body        any
@@ -45,6 +46,16 @@ var apiSpec map[string]any
 func CreateRoutes(basePath string, routes []Route) {
 	if !isInit {
 		panic("Tonic must be initialized first!")
+	}
+
+	apiSpec["components"] = map[string]any{
+		"securitySchemes": map[string]any{
+			"APIKeyHeader": map[string]any{
+				"type": "apiKey",
+				"in":   "header",
+				"name": "Authorization",
+			},
+		},
 	}
 
 	apiSpecPaths, _ := apiSpec["paths"].(map[string]any)
@@ -62,6 +73,12 @@ func CreateRoutes(basePath string, routes []Route) {
 		if !apiPathExisted {
 			pathSpec = make(map[string]any)
 			apiSpecPaths[apiPath] = pathSpec
+		}
+
+		route.Schema.Security = []map[string][]string{
+			{
+				"APIKeyHeader": {},
+			},
 		}
 		pathSpec.(map[string]any)[strings.ToLower(route.Method)] = buildHandlerSpec(route)
 	}
