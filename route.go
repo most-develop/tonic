@@ -110,6 +110,9 @@ func buildHandlerSpec(route *Route) map[string]any {
 	if len(paramsSpec) > 0 {
 		handlerSpec["parameters"] = paramsSpec
 	}
+	if route.Schema.Security != nil {
+		handlerSpec["security"] = route.Schema.Security
+	}
 
 	if route.Schema.Body != nil {
 		handlerSpec["requestBody"] = map[string]any{
