@@ -55,6 +55,11 @@ func CreateRoutes(basePath string, routes []Route) {
 				"in":   "header",
 				"name": "Authorization",
 			},
+			"APIKeyHeader2": map[string]any{
+				"type": "apiKey",
+				"in":   "header",
+				"name": "X-API-Key",
+			},
 		},
 	}
 
@@ -77,7 +82,8 @@ func CreateRoutes(basePath string, routes []Route) {
 
 		route.Schema.Security = []map[string][]string{
 			{
-				"APIKeyHeader": {},
+				"APIKeyHeader":  {},
+				"APIKeyHeader2": {},
 			},
 		}
 		pathSpec.(map[string]any)[strings.ToLower(route.Method)] = buildHandlerSpec(route)
